@@ -1,0 +1,9 @@
+# Keeps the build context tiny: source, editor metadata and the docs are not
+# needed to serve the exported build.
+.godot/
+*.import
+tools/
+LEEME.txt
+Dockerfile
+docker-compose.yml
+.dockerignore

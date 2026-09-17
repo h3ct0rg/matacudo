@@ -1,0 +1,90 @@
+MATA ZANCUDOS — build web
+=========================
+
+Sube TODO el contenido de esta carpeta a tu servidor (por ejemplo a
+public_html/matazancudos/) y abre index.html desde una URL http:// o https://.
+
+No funciona abriendo index.html con doble clic (file://): el navegador bloquea
+la carga de WebAssembly y del paquete del juego en ese modo.
+
+
+Requisito del servidor: tipos MIME
+----------------------------------
+El servidor debe entregar estos tipos. La mayoría ya los trae configurados; si
+el juego se queda en la pantalla de carga, casi siempre es por esto:
+
+    .wasm  ->  application/wasm
+    .pck   ->  application/octet-stream
+    .js    ->  text/javascript
+    .png   ->  image/png
+
+Ejemplos:
+
+Apache (en .htaccess):
+    AddType application/wasm .wasm
+    AddType application/octet-stream .pck
+
+Nginx:
+    types {
+        application/wasm wasm;
+        application/octet-stream pck;
+    }
+
+
+No hacen falta cabeceras especiales
+-----------------------------------
+Esta build es de un solo hilo (single-threaded), así que NO necesita las
+cabeceras de aislamiento cruzado (Cross-Origin-Opener-Policy /
+Cross-Origin-Embedder-Policy) que sí exigen las builds con hilos. Funciona en
+cualquier hosting compartido.
+
+
+Archivos
+--------
+index.html    página que carga el juego
+index.js      cargador del motor
+index.wasm    motor Godot (~39 MB, se descarga una vez y queda en caché)
+index.pck     tu juego (sprites, sonido, escenas, scripts)
+index.png     logo que se ve mientras carga
+index.icon.png / index.apple-touch-icon.png   iconos para pestañas y móvil
+
+Sube todos. El único que puedes omitir son los dos iconos si no te interesan.
+
+
+Puntajes en línea
+-----------------
+El top 5 se guarda en tu Firebase Realtime Database
+(https://chauzancudo-default-rtdb.firebaseio.com). Funciona desde la web igual
+que en el escritorio. Si algún día cambias de base de datos, la dirección está
+en scripts/game_data.gd, constante BASE_URL.
+
+
+Con Docker (opcional)
+---------------------
+Esta carpeta incluye todo para servirlo en un contenedor, sin configurar nada
+en el servidor:
+
+    docker compose up -d --build     construye y arranca
+    docker compose logs -f           ver peticiones en vivo
+    docker compose down              detener
+
+Queda en http://localhost:8080 (o en la IP/puerto de tu servidor). Para cambiar
+el puerto, edita la línea "8080:8080" del docker-compose.yml; el de la derecha
+es el del contenedor y no debe tocarse.
+
+Qué hay:
+
+    Dockerfile                   imagen basada en nginx sin privilegios
+    nginx.conf                   configuración con los MIME correctos y caché
+    docker-compose.yml           modo publicado: copia los archivos a la imagen
+    docker-compose.mount.yml     modo desarrollo: monta la carpeta (puerto 8081)
+    .dockerignore                deja fuera del contexto lo que no se sirve
+
+El contenedor corre como usuario sin privilegios, con el sistema de archivos de
+solo lectura, sin capacidades y con los puertos explícitos. Sirve igual en
+cualquier servidor con Docker; la imagen no depende de esta máquina.
+
+Nota: al ser una build de un solo hilo, la configuración de nginx NO añade las
+cabeceras COOP/COEP, porque no las necesita. Si algún día compilas una versión
+con hilos, habría que añadirlas o el juego no arrancaría.
+

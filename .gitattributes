@@ -1,0 +1,16 @@
+# Normalize line endings in the repository. Without this, Git on Windows warns
+# about every text file and stores CRLF, which then shows up as spurious diffs
+# for anyone on Linux or macOS (and for the Docker build).
+* text=auto eol=lf
+
+# Binary assets must never be line-ending converted.
+*.png binary
+*.wasm binary
+*.pck binary
+*.wav binary
+*.zip binary
+
+# Keeps GitHub's language stats honest.
+*.gd text
+*.tscn text
+*.godot text

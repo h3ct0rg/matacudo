@@ -1,0 +1,4 @@
+# Keeps this folder out of Godot's resource scan, so the development tests,
+# asset generators and probe scenes are never packed into an exported build.
+# Everything here is development tooling; the game itself lives in
+# scenes/ and scripts/.

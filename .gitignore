@@ -1,0 +1,15 @@
+# Godot 4: cache from the editor, regenerated on first open.
+.godot/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# The web build in build/web IS committed on purpose (the user asked for it), so
+# it is deliberately not ignored here. Do not add build/web to this file.
+#
+# Extra export outputs that are not the web build:
+build/*.exe
+build/*.pck
+build/*.zip

@@ -1,0 +1,26 @@
+# Variante "montada": sirve la carpeta tal cual, sin copiarla dentro de la
+# imagen. Útil mientras iteras, porque no hay que reconstruir al cambiar
+# archivos; para publicar usa docker-compose.yml.
+#
+#   docker compose -f docker-compose.mount.yml up -d
+#   docker compose -f docker-compose.mount.yml down
+#
+# Queda en http://localhost:8081 para no chocar con el otro compose.
+services:
+  juego:
+    image: nginxinc/nginx-unprivileged:1.27-alpine
+    container_name: mata-zancudos-dev
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./:/usr/share/nginx/html:ro
+    ports:
+      - "8081:8080"
+    restart: unless-stopped

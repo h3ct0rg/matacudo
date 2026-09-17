@@ -1,0 +1,32 @@
+# Levanta el build web de Mata Zancudos en Docker.
+#
+#   docker compose up -d --build     inicia (y reconstruye la imagen)
+#   docker compose logs -f           ver el acceso en vivo
+#   docker compose down              detener
+#
+# Queda en http://localhost:8080 — cambia el puerto de la izquierda si lo
+# necesitas, por ejemplo "9090:8080".
+#
+# La imagen copia los archivos DENTRO del contenedor, así que sirve tal cual en
+# cualquier servidor con Docker. Si prefieres montar la carpeta para no
+# reconstruir al cambiar archivos, usa docker-compose.mount.yml.
+services:
+  juego:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mata-zancudos
+    image: mata-zancudos-web:latest
+    # Sin privilegios: la imagen base ya corre como usuario nginx, el proceso
+    # no puede escribir en el sistema de archivos y solo se publica el puerto.
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

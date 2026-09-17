@@ -1,0 +1,86 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/menu.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/leaderboard_panel.tscn" id="2_leaderboard"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_start"]
+content_margin_left = 46.0
+content_margin_top = 16.0
+content_margin_right = 46.0
+content_margin_bottom = 16.0
+bg_color = Color(0.95, 0.36, 0.16, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 8
+
+[node name="Menu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.1, 0.15, 1)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Column" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Center/Column"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.55, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.65)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 5
+theme_override_constants/outline_size = 12
+theme_override_colors/font_outline_color = Color(0.25, 0.08, 0.04, 1)
+theme_override_font_sizes/font_size = 92
+text = "MATA ZANCUDOS"
+horizontal_alignment = 1
+
+[node name="Tagline" type="Label" parent="Center/Column"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.87, 0.94, 1)
+theme_override_font_sizes/font_size = 24
+text = "Aplasta todo lo que se pose en la ventana"
+horizontal_alignment = 1
+
+[node name="StartButton" type="Button" parent="Center/Column"]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.92, 0.82, 0.74, 1)
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_start")
+text = "COMENZAR"
+
+[node name="Leaderboard" parent="Center/Column" instance=ExtResource("2_leaderboard")]
+layout_mode = 2
+
+[node name="Version" type="Label" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -46.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.55, 0.64, 0.72, 1)
+theme_override_font_sizes/font_size = 18
+text = "v1.0"
+horizontal_alignment = 1

@@ -1,0 +1,264 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/game.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/background.png" id="2_bg"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" path="res://scenes/leaderboard_panel.tscn" id="4_leaderboard"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_over"]
+content_margin_left = 30.0
+content_margin_top = 18.0
+content_margin_right = 30.0
+content_margin_bottom = 20.0
+bg_color = Color(0.05, 0.08, 0.13, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.72, 0.35, 0.8)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+bg_color = Color(0.95, 0.36, 0.16, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_save"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 0.72, 0.24, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.88, 0.55, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_save_hover"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 0.82, 0.38, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.95, 0.7, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 7
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_save_pressed"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(0.86, 0.55, 0.14, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72, 0.44, 0.1, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_field"]
+content_margin_left = 12.0
+content_margin_top = 7.0
+content_margin_right = 12.0
+content_margin_bottom = 7.0
+bg_color = Color(0.1, 0.15, 0.21, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.35)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(640, 360)
+texture = ExtResource("2_bg")
+
+[node name="Mosquitoes" type="Node2D" parent="."]
+
+[node name="Effects" type="Node2D" parent="."]
+z_index = 10
+
+[node name="SpawnTimer" type="Timer" parent="."]
+wait_time = 1.05
+
+[node name="HUD" parent="." instance=ExtResource("3_hud")]
+layer = 2
+
+[node name="GameOver" type="Control" parent="."]
+process_mode = 3
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dimmer" type="ColorRect" parent="GameOver"]
+process_mode = 3
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Center" type="CenterContainer" parent="GameOver"]
+process_mode = 3
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="GameOver/Center"]
+process_mode = 3
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_over")
+
+[node name="Content" type="VBoxContainer" parent="GameOver/Center/Panel"]
+process_mode = 3
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="Title" type="Label" parent="GameOver/Center/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.35, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.03, 0.02, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 38
+text = "¡SE LLENÓ DE ZANCUDOS!"
+horizontal_alignment = 1
+
+[node name="FinalScore" type="Label" parent="GameOver/Center/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.5, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.02, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 27
+text = "PUNTAJE: 0"
+horizontal_alignment = 1
+
+[node name="NameEntry" type="VBoxContainer" parent="GameOver/Center/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Prompt" type="Label" parent="GameOver/Center/Panel/Content/NameEntry"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 0.99, 1)
+theme_override_font_sizes/font_size = 18
+text = "Escribe tu nombre para guardar tu puntaje:"
+horizontal_alignment = 1
+
+[node name="Row" type="HBoxContainer" parent="GameOver/Center/Panel/Content/NameEntry"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Field" type="LineEdit" parent="GameOver/Center/Panel/Content/NameEntry/Row"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_placeholder_color = Color(0.7, 0.76, 0.82, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StyleBoxFlat_field")
+theme_override_styles/focus = SubResource("StyleBoxFlat_field")
+placeholder_text = "Tu nombre"
+max_length = 16
+
+[node name="Save" type="Button" parent="GameOver/Center/Panel/Content/NameEntry/Row"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.12, 0.02, 1)
+theme_override_colors/font_hover_color = Color(0.18, 0.09, 0.01, 1)
+theme_override_colors/font_pressed_color = Color(0.3, 0.16, 0.03, 1)
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_save")
+theme_override_styles/hover = SubResource("StyleBoxFlat_save_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_save_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_save_hover")
+text = "GUARDAR"
+
+[node name="Status" type="Label" parent="GameOver/Center/Panel/Content/NameEntry"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.86, 0.96, 1)
+theme_override_font_sizes/font_size = 15
+text = ""
+horizontal_alignment = 1
+
+[node name="Error" type="Label" parent="GameOver/Center/Panel/Content/NameEntry"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.55, 0.45, 1)
+theme_override_font_sizes/font_size = 15
+text = ""
+horizontal_alignment = 1
+
+[node name="Leaderboard" parent="GameOver/Center/Panel/Content" instance=ExtResource("4_leaderboard")]
+layout_mode = 2
+
+[node name="Buttons2" type="HBoxContainer" parent="GameOver/Center/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Play" type="Button" parent="GameOver/Center/Panel/Content/Buttons2"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_play")
+text = "JUGAR OTRA VEZ"
+
+[node name="Menu" type="Button" parent="GameOver/Center/Panel/Content/Buttons2"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "MENÚ"
+
+[connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
