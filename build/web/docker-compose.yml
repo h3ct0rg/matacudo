@@ -10,6 +10,19 @@
 # La imagen copia los archivos DENTRO del contenedor, así que sirve tal cual en
 # cualquier servidor con Docker. Si prefieres montar la carpeta para no
 # reconstruir al cambiar archivos, usa docker-compose.mount.yml.
+networks:
+  # Red propia del juego. El subnet 10.90.0.0/24 ya lo usa catgram, por eso
+  # aqui va 10.92.0.0/24 (10.91 lo ocupa publishweb).
+  matazancudos-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.92.0.0/24
+  # Red del nginx proxy manager, ya existente. Permite que el proxy llegue al
+  # contenedor por su nombre (mata-zancudos:8080) sin pasar por el puerto host.
+  nginx-network:
+    external: true
+    name: nginx-manager_default
 services:
   juego:
     build:
@@ -24,9 +37,15 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    # Con read_only:true, nginx igual necesita escribir aqui (pid y temp files).
+    # El mode=1777 es obligatorio: sin el, el tmpfs queda como root y el usuario
+    # nginx (uid 101) no puede crear /var/cache/nginx/client_temp.
     tmpfs:
-      - /tmp
-      - /var/cache/nginx
+      - /tmp:mode=1777
+      - /var/cache/nginx:mode=1777
     ports:
-      - "8080:8080"
+      - "8098:8080"
     restart: unless-stopped
+    networks:
+      - matazancudos-network
+      - nginx-network
