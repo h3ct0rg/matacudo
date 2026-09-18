@@ -1,6 +1,12 @@
 # Godot 4: cache from the editor, regenerated on first open.
 .godot/
 
+# Editor-generated import metadata. The game does not need it (textures are
+# reimported on first open), but the web build's own icons are referenced by
+# index.html, so those two are kept.
+*.import
+!build/web/*.import
+
 # OS / editor noise
 .DS_Store
 Thumbs.db
@@ -13,3 +19,6 @@ desktop.ini
 build/*.exe
 build/*.pck
 build/*.zip
+build/*.log
+build/*.png
+build/*.import
