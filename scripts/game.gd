@@ -7,6 +7,12 @@ extends Node2D
 
 const MOSQUITO_SCENE := preload("res://scenes/mosquito.tscn")
 const HIT_EFFECT_SCENE := preload("res://scenes/hit_effect.tscn")
+const PRESS_INDICATOR_SCENE := preload("res://scenes/press_indicator.tscn")
+
+## Radius of the swat area, in game units. It must match the CircleShape2D in
+## scenes/mosquito.tscn: that shape is what catches the press, and this value is
+## what the on-screen indicator draws so the player can see the real area.
+const SWAT_RADIUS := 40.0
 
 ## Spawn area: inset so mosquitoes never sit under the window frame.
 const SPAWN_BOUNDS := Rect2(70, 70, 1140, 580)
@@ -42,6 +48,8 @@ var _fill := 0.0
 var _fill_clock := 0.0
 var _finished := false
 var _uploading := false
+## Positions where the press circle was shown, kept for the development tests.
+var _press_marks: Array[Vector2] = []
 
 
 func _ready() -> void:
@@ -134,6 +142,39 @@ func _spawn_position() -> Vector2:
 		randf_range(SPAWN_BOUNDS.position.x + margin, SPAWN_BOUNDS.end.x - margin),
 		randf_range(SPAWN_BOUNDS.position.y + margin, SPAWN_BOUNDS.end.y - margin),
 	)
+
+
+## Shows the swat-area circle wherever the player presses, hit or miss, so the
+## real size of the target is visible instead of guessed.
+##
+## The project emulates touch from the mouse, which means a desktop click arrives
+## here twice, once as a mouse button and once as a screen touch. Only the touch
+## event is used when touch is available, which keeps it to one circle per press
+## on both desktop and mobile.
+func _unhandled_input(event: InputEvent) -> void:
+	var pressed := false
+	if event is InputEventScreenTouch:
+		pressed = event.pressed
+	elif event is InputEventMouseButton and not _touch_available():
+		pressed = event.pressed and event.button_index == MOUSE_BUTTON_LEFT
+	if not pressed:
+		return
+	var at: Vector2 = (event as InputEvent).position
+	_show_press_indicator(at)
+
+
+## True when the platform reports a touchscreen, so mouse events are only the
+## emulated twin of a touch and should not be drawn twice.
+func _touch_available() -> bool:
+	return DisplayServer.is_touchscreen_available()
+
+
+## Draws the circle under the game layer, then records it for tests.
+func _show_press_indicator(at: Vector2) -> void:
+	var indicator: Node2D = PRESS_INDICATOR_SCENE.instantiate()
+	_effects.add_child(indicator)
+	indicator.call("show_press", at, SWAT_RADIUS)
+	_press_marks.append(at)
 
 
 func _on_mosquito_swatted(points: int, at: Vector2) -> void:

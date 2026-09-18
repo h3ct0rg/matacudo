@@ -183,14 +183,48 @@ if (shot.result?.data) {
   if (settle > 0) {
     console.log(`esperando ${settle}s a que lleguen los contadores...`)
     await delay(settle * 1000)
-    const later = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false })
-    if (later.result?.data) {
-      await writeFile(SHOT, Buffer.from(later.result.data, 'base64'))
-    }
-  } else {
-    await writeFile(SHOT, Buffer.from(shot.result.data, 'base64'))
   }
+  // Optional: press at a fraction of the viewport, to catch the swat circle
+  // while it is on screen (it fades out in about 0.28 s). With PRESS_AFTER=1 the
+  // press happens after the settle delay instead of before, which is what a
+  // press inside the running game needs.
+  const press = process.env.PRESS_AT
+  if (press) {
+    await pressAt(press)
+  }
+  const final = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false })
+  if (final.result?.data) {
+    await writeFile(SHOT, Buffer.from(final.result.data, 'base64'))
+  }
+  // Report the canvas against the viewport again: after a scene change the two
+  // can disagree, which shows up as a strip of page background on one side.
+  const after = await send('Runtime.evaluate', {
+    expression: `(() => {
+      const c = document.querySelector('canvas');
+      return JSON.stringify({
+        viewport: innerWidth + 'x' + innerHeight,
+        canvasCss: getComputedStyle(c).width + 'x' + getComputedStyle(c).height,
+        canvasBuffer: c.width + 'x' + c.height,
+        dpr: devicePixelRatio,
+      });
+    })()`,
+    returnByValue: true,
+  })
+  console.log('--- después del clic ---')
+  const info = JSON.parse(after.result?.result?.value ?? '{}')
+  for (const [key, value] of Object.entries(info)) console.log(`  ${key}: ${value}`)
   console.log(`screenshot -> ${SHOT}`)
+}
+
+async function pressAt(fraction) {
+  const [fx, fy] = fraction.split(',').map(Number)
+  const x = Math.round(WIDTH * fx)
+  const y = Math.round(HEIGHT * fy)
+  console.log(`pulsando en ${x},${y}`)
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y, button: 'none', clickCount: 0 })
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 })
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 })
+  await delay(Number(process.env.PRESS_DELAY_MS ?? 60))
 }
 
 socket.close()

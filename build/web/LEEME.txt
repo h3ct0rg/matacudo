@@ -50,8 +50,22 @@ cargando detrás, así que al girar aparece listo para jugar.
 En horizontal el juego llena la pantalla completa. El jugador puede tocar
 "Continuar así" para ignorar el aviso (vuelve a aparecer a los 2 minutos).
 
-Si prefieres que se pueda jugar en vertical con el juego grande, habría que
-rehacer el diseño del campo de juego en formato vertical.
+
+Área de aplastamiento
+---------------------
+Al tocar o hacer clic aparece un círculo dorado que marca, por un instante, el
+área que cuenta como acierto. Su radio es de 40 unidades de juego (el zancudo
+dibujado mide ~60 de largo), y en un teléfono horizontal equivale a unos 11 mm:
+por encima del mínimo cómodo de 9 mm que recomiendan las guías táctiles.
+
+Si quieres cambiar el tamaño hay que tocar dos sitios y mantenerlos iguales:
+
+  * scenes/mosquito.tscn -> CollisionShape2D -> CircleShape2D -> radius
+  * scripts/game.gd      -> constante SWAT_RADIUS
+
+El primero es el que realmente captura el toque; el segundo es el que dibuja el
+círculo. Si se separan, el jugador verá un área distinta de la que acierta.
+
 
 
 

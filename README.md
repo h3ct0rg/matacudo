@@ -13,6 +13,11 @@ El top 5 de puntajes se guarda en línea en Firebase Realtime Database.
   los aplastas. La barra `PANTALLA` muestra cuánto llevan ocupado.
 - **Puntos**: aplastar rápido paga más (hasta 4 puntos), y tres aplastamientos
   seguidos dan **combo x2**. Los zancudos grandes valen el doble.
+- **Área de toque**: cada clic o toque dibuja un círculo con el área que cuenta
+  como acierto (radio 40 en unidades de juego, unos 11 mm en un teléfono
+  horizontal). El tamaño se ajusta en dos sitios que deben coincidir:
+  `scenes/mosquito.tscn` (la forma de colisión, que es la que captura el toque) y
+  `SWAT_RADIUS` en `scripts/game.gd` (lo que dibuja el círculo).
 - **Fin**: al pasar del 70 % de ocupación. Escribes tu nombre, se sube el puntaje
   y aparece el top 5 con tu entrada resaltada.
 

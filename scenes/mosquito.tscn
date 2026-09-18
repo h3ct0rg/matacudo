@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/mosquito_2.png" id="4_frame2"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mosquito"]
-radius = 26.0
+radius = 40.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_mosquito"]
 animations = [{
