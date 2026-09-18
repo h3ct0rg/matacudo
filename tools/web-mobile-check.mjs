@@ -177,7 +177,19 @@ for (const [key, value] of Object.entries(report ?? {})) console.log(`  ${key}: 
 
 const shot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false })
 if (shot.result?.data) {
-  await writeFile(SHOT, Buffer.from(shot.result.data, 'base64'))
+  // Give asynchronous work (the Firebase counters and leaderboard) a chance to
+  // land before the picture is taken.
+  const settle = Number(process.env.SETTLE_SECONDS ?? 0)
+  if (settle > 0) {
+    console.log(`esperando ${settle}s a que lleguen los contadores...`)
+    await delay(settle * 1000)
+    const later = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false })
+    if (later.result?.data) {
+      await writeFile(SHOT, Buffer.from(later.result.data, 'base64'))
+    }
+  } else {
+    await writeFile(SHOT, Buffer.from(shot.result.data, 'base64'))
+  }
   console.log(`screenshot -> ${SHOT}`)
 }
 

@@ -87,3 +87,24 @@ una consulta ordenada del servidor.
 
 El juego funciona sin conexión: si la nube no responde, muestra la última tabla
 conocida y avisa al guardar.
+
+## Contadores de jugadores
+
+`scripts/analytics.gd` (autoload `Analytics`) mantiene dos números que el menú y
+la pantalla final muestran:
+
+| Contador | Nodo | Cómo se mantiene |
+|---|---|---|
+| En línea ahora | `presence/` | Cada sesión escribe su entrada y arma un borrado en el servidor (`onDisconnect`); un latido cada 45 s la refresca y las entradas de más de 150 s no se cuentan |
+| Jugadores en total | `stats/players` | Se suma uno al empezar cada partida |
+
+El incremento atómico que documenta Firebase **no funciona en esta base**: se
+comprobó escribiendo `10` y luego `2` en un nodo nuevo, y quedó `2`. Por eso la
+suma se hace leyendo y escribiendo el valor siguiente, con el riesgo de perder
+una cuenta si dos partidas empiezan en el mismo instante. El único lugar a
+cambiar si la base llegara a soportarlo es `_count_player()` en
+`scripts/analytics.gd`.
+
+Prueba relacionada: `tools/counters_test.tscn` verifica que ambos contadores
+llegan a la interfaz del menú y del fin de partida.
+

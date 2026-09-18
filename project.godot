@@ -18,6 +18,7 @@ config/features=PackedStringArray("4.7")
 [autoload]
 
 GameData="*res://scripts/game_data.gd"
+Analytics="*res://scripts/analytics.gd"
 Sfx="*res://scripts/sfx.gd"
 
 [display]

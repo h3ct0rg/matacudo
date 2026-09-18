@@ -241,6 +241,13 @@ horizontal_alignment = 1
 [node name="Leaderboard" parent="GameOver/Center/Panel/Content" instance=ExtResource("4_leaderboard")]
 layout_mode = 2
 
+[node name="Stats" type="Label" parent="GameOver/Center/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.79, 0.88, 1)
+theme_override_font_sizes/font_size = 16
+text = ""
+horizontal_alignment = 1
+
 [node name="Buttons2" type="HBoxContainer" parent="GameOver/Center/Panel/Content"]
 layout_mode = 2
 theme_override_constants/separation = 14

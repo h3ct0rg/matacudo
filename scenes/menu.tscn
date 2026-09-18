@@ -73,6 +73,15 @@ text = "COMENZAR"
 [node name="Leaderboard" parent="Center/Column" instance=ExtResource("2_leaderboard")]
 layout_mode = 2
 
+[node name="Stats" type="Label" parent="Center/Column"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.79, 0.88, 1)
+theme_override_colors/font_outline_color = Color(0.06, 0.09, 0.13, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 19
+text = "Conectando con el marcador en línea..."
+horizontal_alignment = 1
+
 [node name="Version" type="Label" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0

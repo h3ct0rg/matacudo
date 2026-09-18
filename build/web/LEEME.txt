@@ -72,7 +72,27 @@ Puntajes en línea
 El top 5 se guarda en tu Firebase Realtime Database
 (https://chauzancudo-default-rtdb.firebaseio.com). Funciona desde la web igual
 que en el escritorio. Si algún día cambias de base de datos, la dirección está
-en scripts/game_data.gd, constante BASE_URL.
+en scripts/analytics.gd y scripts/game_data.gd, constante BASE_URL.
+
+El menú también muestra dos contadores, en los nodos `stats/players` y
+`presence/` de la misma base:
+
+  * "en línea ahora": sesiones activas. Cada sesión se registra con una clave
+    propia y programa su borrado en el servidor (onDisconnect), así que al
+    cerrar la pestaña desaparece sola. Además, un latido cada 45 segundos
+    actualiza la marca de tiempo y las entradas de más de 2 minutos y medio no
+    se cuentan, para el caso de móviles que se quedan sin batería o sin señal.
+  * "jugadores en total": partidas iniciadas. Se suma una cada vez que empieza
+    una partida (no al cargar la página).
+
+Nota técnica: el incremento atómico que documenta Firebase (enviar un número
+suelto) NO funciona en esta base; se comprobó escribiendo 10 y luego 2 en un nodo
+nuevo y quedando 2. Por eso el contador se suma leyendo y escribiendo el valor
+siguiente. Si dos personas empiezan una partida en el mismo instante, se puede
+perder una cuenta; para un marcador casual es aceptable. El único sitio a
+cambiar si algún día la base soporta el incremento es
+scripts/analytics.gd, función _count_player().
+
 
 
 Con Docker (opcional)

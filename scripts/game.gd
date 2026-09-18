@@ -33,6 +33,7 @@ const SHARE_BIG := 0.032
 @onready var _name_input: LineEdit = $GameOver/Center/Panel/Content/NameEntry/Row/Field
 @onready var _name_error: Label = $GameOver/Center/Panel/Content/NameEntry/Error
 @onready var _leaderboard: PanelContainer = $GameOver/Center/Panel/Content/Leaderboard
+@onready var _stats: Label = $GameOver/Center/Panel/Content/Stats
 
 var _elapsed := 0.0
 var _combo_hits := 0
@@ -47,6 +48,10 @@ func _ready() -> void:
 	randomize()
 	get_tree().paused = false
 	GameData.start_run()
+	# Each run counts as one more player who played.
+	Analytics.count_run()
+	Analytics.stats_changed.connect(_on_stats_changed)
+	_on_stats_changed(Analytics.online, Analytics.players)
 	_hud.set_score(0)
 	_hud.set_fill(0.0)
 	_hud.set_combo(0, 1)
@@ -254,3 +259,14 @@ func _on_play_again_pressed() -> void:
 func _on_menu_pressed() -> void:
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/menu.tscn")
+
+
+## Keeps the counter line on the game-over panel in step with the cloud.
+func _on_stats_changed(online: int, players: int) -> void:
+	if online == 0 and players == 0:
+		_stats.text = ""
+		return
+	var people := "jugador" if players == 1 else "jugadores"
+	# Plain text only: bullets and emoji have no glyph in the default font and
+	# would show as a placeholder box.
+	_stats.text = "%d en línea ahora  ·  %d %s en total" % [online, players, people]
