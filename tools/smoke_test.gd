@@ -97,7 +97,10 @@ func _run() -> void:
 	_check(centred, "el panel de fin queda centrado (%.0f,%.0f)" % [panel.global_position.x, panel.global_position.y])
 
 	# 4. The score is stored under the typed name and comes back from the cloud.
-	GameData.score = 7
+	# A score high enough to reach the top five: with a low one the assertion
+	# below fails for the right reason (the table keeps only five entries) and
+	# would look like a bug in the game.
+	GameData.score = 9999
 	var field: LineEdit = _game.get_node("GameOver/Center/Panel/Content/NameEntry/Row/Field")
 	var save_button: Button = _game.get_node("GameOver/Center/Panel/Content/NameEntry/Row/Save")
 	var name_entry: Control = _game.get_node("GameOver/Center/Panel/Content/NameEntry")

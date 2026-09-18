@@ -5,6 +5,7 @@
 # reimported on first open), but the web build's own icons are referenced by
 # index.html, so those two are kept.
 *.import
+tools/*.uid
 !build/web/*.import
 
 # OS / editor noise

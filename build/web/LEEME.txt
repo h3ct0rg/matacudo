@@ -1,11 +1,21 @@
-MATA ZANCUDOS — build web
-=========================
+MATA ZANCUDOS — build web (v1.0.5)
+==================================
 
 Sube TODO el contenido de esta carpeta a tu servidor (por ejemplo a
 public_html/matazancudos/) y abre index.html desde una URL http:// o https://.
 
 No funciona abriendo index.html con doble clic (file://): el navegador bloquea
 la carga de WebAssembly y del paquete del juego en ese modo.
+
+
+Novedades de la 1.0.5
+---------------------
+- Área de aplastamiento más grande (radio 26 -> 40) y un círculo que muestra en
+  pantalla el área que cuenta como acierto en cada clic o toque.
+- Arreglado el teclado en móvil: antes aparecía el teclado y lo escrito no
+  llegaba al campo de nombre. La causa era que el motor ponía el foco del
+  navegador en el canvas, que se lo quitaba al campo. El HTML de esta build
+  anula ese foco, así que el texto ya entra.
 
 
 Requisito del servidor: tipos MIME

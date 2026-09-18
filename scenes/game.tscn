@@ -183,6 +183,7 @@ text = "PUNTAJE: 0"
 horizontal_alignment = 1
 
 [node name="NameEntry" type="VBoxContainer" parent="GameOver/Center/Panel/Content"]
+process_mode = 3
 layout_mode = 2
 theme_override_constants/separation = 4
 

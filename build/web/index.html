@@ -260,8 +260,47 @@ body {
 		<!-- index.js already carries the .js extension. -->
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":209948,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":426620,"index.wasm":39514754},"focusCanvas":false,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
+
+// The engine puts DOM focus on the canvas while the game runs. On a phone that
+// breaks text entry: tapping the name field brought up the keyboard and then
+// typed into nothing, because the canvas took focus back (verified:
+// document.activeElement went from INPUT to CANVAS on the same tap).
+// Canvas focus buys nothing for a game played entirely with taps, so the canvas
+// is made unfocusable: with a negative tabindex, focus() on it is a no-op and it
+// cannot take focus from the field. Keyboard controls, if ever added, would need
+// this removed.
+// The engine keeps DOM focus on the canvas, which on a phone breaks text entry:
+// tapping the name field brought the keyboard up and typed into nothing, because
+// the canvas took focus back on that same gesture (verified: document.activeElement
+// went from INPUT to CANVAS, while the engine did focus the LineEdit, so the
+// problem is purely the DOM side). A negative tabindex and intercepting the
+// pointer gesture were both tried and neither stopped it, so focus() on the
+// canvas is disabled outright: whoever calls it, whenever, nothing happens.
+// Typing is unaffected — the engine reads keys from the canvas's keydown
+// handler, which does not need the element to be focused, and this game is
+// played entirely with taps. Keyboard-driven controls would need this removed.
+(function () {
+	var canvas = document.getElementById('canvas');
+	var lastInput = null;
+
+	document.addEventListener('focusin', function (event) {
+		var target = event.target;
+		if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+			lastInput = target;
+		}
+	}, true);
+
+	canvas.focus = function () {
+		// Give the field back its focus if the engine was about to take it.
+		if (lastInput && lastInput.isConnected && !lastInput.disabled
+				&& document.activeElement !== lastInput) {
+			lastInput.focus();
+		}
+	};
+}());
+
 const engine = new Engine(GODOT_CONFIG);
 
 (function () {

@@ -201,9 +201,16 @@ if (shot.result?.data) {
   const after = await send('Runtime.evaluate', {
     expression: `(() => {
       const c = document.querySelector('canvas');
+      const w = document.getElementById('game');
+      const r = c.getBoundingClientRect();
+      const wr = w ? w.getBoundingClientRect() : null;
+      const cs = getComputedStyle(c);
       return JSON.stringify({
         viewport: innerWidth + 'x' + innerHeight,
-        canvasCss: getComputedStyle(c).width + 'x' + getComputedStyle(c).height,
+        canvasRect: [r.left, r.top, r.right, r.bottom].map(Math.round).join(','),
+        canvasCss: cs.width + 'x' + cs.height,
+        wrapperRect: wr ? [wr.left, wr.top, wr.right, wr.bottom].map(Math.round).join(',') : 'sin wrapper',
+        wrapperPadding: w ? getComputedStyle(w).padding : '-',
         canvasBuffer: c.width + 'x' + c.height,
         dpr: devicePixelRatio,
       });
