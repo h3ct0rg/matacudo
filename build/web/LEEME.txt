@@ -39,6 +39,22 @@ Cross-Origin-Embedder-Policy) que sí exigen las builds con hilos. Funciona en
 cualquier hosting compartido.
 
 
+En móvil: se juega en horizontal
+--------------------------------
+El campo de juego es panorámico (16:9), así que en un teléfono vertical solo
+puede ocupar el tercio central de la pantalla: es geometría, no un fallo. Por eso
+el juego muestra el aviso "Gira tu teléfono" cuando detecta un dispositivo
+táctil en vertical. El aviso NO detiene ni reinicia el motor: el juego sigue
+cargando detrás, así que al girar aparece listo para jugar.
+
+En horizontal el juego llena la pantalla completa. El jugador puede tocar
+"Continuar así" para ignorar el aviso (vuelve a aparecer a los 2 minutos).
+
+Si prefieres que se pueda jugar en vertical con el juego grande, habría que
+rehacer el diseño del campo de juego en formato vertical.
+
+
+
 Archivos
 --------
 index.html    página que carga el juego
