@@ -16,7 +16,7 @@ const WIDTH = Number(process.argv[2] ?? 390)
 const HEIGHT = Number(process.argv[3] ?? 844)
 const PORT = Number(process.argv[4] ?? 8140)
 const SHOT = process.argv[5] ?? 'E:\\software\\juegos\\mataCudos\\build\\mobile-shot.png'
-const ROOT = 'E:\\software\\juegos\\mataCudos\\build\\web'
+const ROOT = process.env.WEB_ROOT ?? 'E:\\software\\juegos\\mataCudos\\build\\web'
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 const PROFILE = `${process.env.TEMP}\\dsh-chrome-mobile`
 // `--no-touch` runs the check as a desktop: no device metrics override and no
@@ -47,8 +47,9 @@ const server = createServer(async (request, response) => {
       'Content-Length': body.length,
     })
     response.end(body)
-  } catch {
+  } catch (error) {
     response.writeHead(404).end('not found')
+    console.log(`404 ${relative} (${error.code ?? error.message})`)
   }
 })
 await new Promise((resolve) => server.listen(PORT, '127.0.0.1', resolve))

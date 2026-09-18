@@ -90,6 +90,51 @@ index.icon.png / index.apple-touch-icon.png   iconos para pestañas y móvil
 
 Sube todos. El único que puedes omitir son los dos iconos si no te interesan.
 
+OJO: con Docker, el contenedor RENOMBRA index.js, index.wasm e index.pck
+agregándoles la versión (por ejemplo index-1.0.5.pck). Los nombres de arriba son
+los que salen del export; dentro del contenedor verás los versionados. Es a
+propósito, ver "Caché y versiones" más abajo.
+
+
+Caché y versiones (importante)
+------------------------------
+El problema: los archivos tienen siempre el mismo nombre, así que el navegador
+de quien ya jugó guarda index.pck (el juego) y lo sigue sirviendo aunque subas
+una versión nueva. El index.html se revalida siempre, pero el navegador pedía
+igual el paquete viejo.
+
+La solución que trae esta build: al construir la imagen, los archivos se renombran
+con la versión del juego:
+
+    index-1.0.5.js · index-1.0.5.wasm · index-1.0.5.pck
+    index-1.0.5.audio.worklet.js · index-1.0.5.audio.position.worklet.js
+
+Como cada versión tiene una URL distinta, el navegador NO PUEDE servir la
+anterior: no existe en su caché. No hace falta que nadie limpie nada, ni purgar
+un CDN, ni tocar cabeceras.
+
+Cómo desplegar una versión nueva:
+
+    cd build/web
+    VERSION=1.0.6 docker compose up -d --build
+
+Sube ese número en cada release, y que coincida con config/version de
+project.godot (el que se ve en el menú). El Dockerfile comprime el motor en el
+build (39 MB -> ~10 MB), así que volver a descargarlo no cuesta tanto; aun así,
+si el despliegue es solo de código, el motor se vuelve a bajar igual: es el
+precio de que nada quede viejo.
+
+Para el modo "montado" (docker-compose.mount.yml) no hay renombrado, porque sirve
+la carpeta tal cual. Si lo usas, tenés el problema de caché: es solo para
+desarrollo.
+
+Verificación rápida después de desplegar:
+
+    curl -sI https://tu-dominio/index.html | findstr /I "cache"
+    curl -sI https://tu-dominio/index-1.0.6.pck | findstr /I "cache"
+
+El primero debe decir no-cache; el segundo, immutable.
+
 
 Puntajes en línea
 -----------------

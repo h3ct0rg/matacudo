@@ -28,6 +28,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Version con la que se renombran index.js e index.pck (index-1.0.5.js,
+      # index-1.0.5.pck). Al cambiar la version cambian las URLs, que es lo que
+      # impide que un navegador sirva la version anterior desde su cache.
+      # Subela junto con config/version de project.godot en cada release:
+      #   VERSION=1.0.6 docker compose up -d --build
+      args:
+        VERSION: ${VERSION:-1.0.5}
     container_name: mata-zancudos
     image: mata-zancudos-web:latest
     # Sin privilegios: la imagen base ya corre como usuario nginx, el proceso

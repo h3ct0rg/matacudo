@@ -6,6 +6,10 @@
 #   docker compose -f docker-compose.mount.yml down
 #
 # Queda en http://localhost:8081 para no chocar con el otro compose.
+#
+# A diferencia del compose principal, este NO renombra los archivos con la
+# version (monta la carpeta tal cual), asi que no tiene cache busting: sirve para
+# desarrollar, no para publicar.
 services:
   juego:
     image: nginxinc/nginx-unprivileged:1.27-alpine

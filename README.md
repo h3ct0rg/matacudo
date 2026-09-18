@@ -73,8 +73,34 @@ hosting). Para levantarla:
 
 ```bash
 cd build/web
-docker compose up -d --build     # http://localhost:8080
+VERSION=1.0.6 docker compose up -d --build     # o el puerto que tengas configurado
 ```
+
+### Caché: por qué se pasa la versión
+
+Los archivos del export se llaman siempre igual (`index.pck`, `index.js`…), así
+que el navegador de quien ya jugó guarda el paquete del juego y lo sigue sirviendo
+aunque publiques una versión nueva. El `index.html` se revalida siempre, pero el
+`.pck` lo pide el motor, así que no se puede cache-bustear desde el HTML.
+
+Al construir la imagen, `version-bump.sh` renombra los archivos con la versión:
+
+```
+index-1.0.6.js · index-1.0.6.wasm · index-1.0.6.pck · index-1.0.6.audio.worklet.js
+```
+
+Cada versión tiene URL nueva, así que el navegador no puede servir la anterior.
+No hace falta purgar cachés ni que el usuario limpie nada. El Dockerfile además
+comprime el motor en el build (39 MB → ~10 MB) y nginx lo sirve con
+`gzip_static`.
+
+Hay que pasar `VERSION` en cada despliegue y mantenerlo igual que
+`config/version` de `project.godot`. El modo montado
+(`docker-compose.mount.yml`) no renombra nada: es solo para desarrollo.
+
+`tools/validate-docker.ps1` comprueba, sin necesidad de un demonio Docker, que
+los COPY apunten a archivos existentes, que el renombrado cubra los cuatro
+archivos y que las reglas de caché de nginx sean las correctas.
 
 Ver `build/web/LEEME.txt` para los tipos MIME que necesita el servidor y el resto
 de detalles. Para recompilarla desde el código:

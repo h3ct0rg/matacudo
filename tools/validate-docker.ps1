@@ -69,10 +69,12 @@ Check ($conf -match 'application/octet-stream\s+pck;') "declara application/octe
 # 5. The single-threaded build must NOT be served with cross-origin isolation.
 Check ($conf -notmatch 'Cross-Origin-(Opener|Embedder)-Policy') "no impone cabeceras COOP/COEP (build sin hilos)"
 
-# 6. Compose coherence.
+# 6. Compose coherence. The host port is a deployment choice (this one publishes
+#    8098 and is reached through the nginx proxy manager), but the container side
+#    must stay 8080 because that is what nginx listens on.
 $composeText = Get-Content $compose -Raw
 $mountText = Get-Content $composeMount -Raw
-Check ($composeText -match '8080:8080') "compose principal publica 8080"
+Check ($composeText -match '"\d+:8080"') "compose principal publica el 8080 del contenedor"
 Check ($mountText -match '8081:8080') "compose montado publica 8081 (no choca con el otro)"
 Check ($composeText -match 'context:\s*\.') "compose principal usa el contexto actual"
 Check ($mountText -match '\./nginx\.conf:/etc/nginx/nginx\.conf:ro') "compose montado monta nginx.conf de solo lectura"
@@ -81,6 +83,35 @@ Check ($mountText -match '\./:/usr/share/nginx/html:ro') "compose montado monta 
 # 7. Standard Compose top-level shape.
 Check ($composeText -match '(?m)^services:') "docker-compose.yml tiene la clave services"
 Check ($mountText -match '(?m)^services:') "docker-compose.mount.yml tiene la clave services"
+
+# 8. Cache-busting: the version rename is what stops browsers serving an old
+#    release, and a half-applied rename would produce a page that 404s.
+$bump = Join-Path $Root "version-bump.sh"
+Check (Test-Path $bump) "existe version-bump.sh"
+$bumpText = Get-Content $bump -Raw
+$dockerText2 = Get-Content $dockerfile -Raw
+Check ($dockerText2 -match 'ARG\s+VERSION=') "el Dockerfile declara ARG VERSION"
+Check ($dockerText2 -match 'version-bump\.sh\s+"\$VERSION"') "el Dockerfile ejecuta el renombrado con la version"
+Check ($bumpText -match 'index-\$VERSION\.js') "el renombrado cubre el loader (.js)"
+Check ($bumpText -match 'index-\$VERSION\.wasm') "el renombrado cubre el motor (.wasm)"
+Check ($bumpText -match 'index-\$VERSION\.pck') "el renombrado cubre el paquete del juego (.pck)"
+Check ($bumpText -match 'worklet') "el renombrado cubre los worklets de audio (derivan del mismo nombre base)"
+# The sed replacement spans two lines in the script (shell line continuation),
+# so this looks for the one line that carries the executable rewrite rather than
+# trying to match the whole shape with one regex.
+$executableLine = Select-String -Path $bump -Pattern 'executable' |
+    Where-Object { $_.Line -match '\$VERSION' -and $_.Line -match 's\|' } |
+    Select-Object -First 1
+Check ($null -ne $executableLine) "el renombrado actualiza executable, de donde el motor saca los nombres"
+Check ($dockerText2 -match 'gzip -9 .*index-\$VERSION\.wasm') "el Dockerfile comprime el wasm en el build"
+Check ($conf -match 'gzip_static\s+on;') "nginx sirve la copia comprimida (gzip_static)"
+
+# 9. Caching rules: the versioned payload is immutable, the entry point is not.
+Check ($conf -match 'location = /index\.html') "el index.html tiene su propia regla"
+Check ($conf -match 'location = /index\.html\s*\{[^}]*no-cache') "el index.html nunca se cachea"
+Check ($conf -match 'immutable') "los archivos versionados se cachean fuerte"
+$versionedBlock = [regex]::Match($conf, '(?s)location ~\* -\[0-9\].*?\}')
+Check ($versionedBlock.Success -and $versionedBlock.Value -match 'immutable') "la regla de los versionados usa immutable"
 
 Write-Output ""
 if ($failures -eq 0) { Write-Output "VALIDACION: TODO OK" } else { Write-Output "VALIDACION: $failures FALLAS" }
